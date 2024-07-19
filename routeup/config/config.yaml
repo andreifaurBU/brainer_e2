@@ -1,0 +1,24 @@
+##
+## Copyright (c) 2024 by Dribia Data Research.
+## This file is part of project RouteUp,
+## and is released under the MIT License Agreement.
+## See the LICENSE file for more information.
+##
+
+# Main configuration file.
+# This file is parsed using DriConfig in the 'core.config' module.
+# The parsed file can be accessed through the ''config.APP_CONFIG'
+# interface.
+
+LOGGER_OPTIONS:
+  MAX_BYTES: 20971520  # 20MB
+  MAX_DAYS: 365  # 1Y
+  LOG_FORMAT_F: "{time} ({elapsed}) - {level} - {module} - {function} - {message}"
+  LOG_FORMAT_T: "<green>{time:HH:mm:ss} - ({elapsed})</green> |
+                <level>{level: <10}</level> |
+                <cyan>{name}</cyan>:<cyan>{line}</cyan> |
+                <level>{message}</level>"
+  LOG_FORMAT_U: "{level: <10} | {message}"
+
+
+grid_search_time_limit: 30  # seconds

@@ -1,0 +1,77 @@
+version: "3"
+
+# SERVICES -------------------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------------------------- #
+
+services:
+
+  # # NGINX --------------------------------------------------------------------------------------- #
+  # # --------------------------------------------------------------------------------------------- #
+
+  www-busup-ms-dev:
+    image: nginx
+    ports:
+      - $NGINX_PORT:80
+    volumes:
+      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./.docker/nginx/logs:/var/log/nginx/
+      - ./:/usr/share/nginx/html
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - pdp
+
+  # # PHP ----------------------------------------------------------------------------------------- #
+  # # --------------------------------------------------------------------------------------------- #
+
+  php-fpm-busup-ms-dev:
+    build:
+      context: .
+      dockerfile: ./.docker/php/Dockerfile
+    volumes:
+      - ./.docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./.docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - ./.docker/php/logs:/var/log/php
+      - ./:/usr/share/nginx/html
+    environment:
+      PHP_IDE_CONFIG: "serverName=laravelddd.test"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mysql-db
+    networks:
+      - pdp
+
+  # MYSQL DB ------------------------------------------------------------------------------------ #
+  # --------------------------------------------------------------------------------------------- #
+
+  mysql-db:
+    platform: linux/amd64
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'busup-db'
+      MYSQL_USER: 'busup-user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'RootPassword'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./.docker/db/mysql-db:/var/lib/mysql
+    networks:
+      - pdp
+
+# VOLUMES --------------------------------------------------------------------------------------- #
+# ----------------------------------------------------------------------------------------------- #
+
+volumes:
+  etcd_data:
+    driver: local
+
+# END OF FILE
+
+networks:
+  pdp:
+    driver: bridge
